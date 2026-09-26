@@ -99,12 +99,12 @@ The extension and the bookmark read Instagram, WhatsApp Web, Snapchat Web, and G
 
 Click the button and the zip downloads. Jev is not in the Chrome Web Store yet, so Chrome loads it with Developer mode on.
 
-1. **Unzip it.** Right-click the zip → **Extract All**. You get a folder named `extension` with `manifest.json` inside.
-2. **Load it in Chrome.** Go to `chrome://extensions`, turn on **Developer mode** in the top right, click **Load unpacked**, and select the `extension` folder.
+1. **Unzip it.** Right-click the zip → **Extract All**. You get a folder named `jev-assistant-extension` with `manifest.json` directly inside.
+2. **Load it in Chrome.** Go to `chrome://extensions`, turn on **Developer mode** in the top right, click **Load unpacked**, and select the `jev-assistant-extension` folder.
 
    <p align="center">
      <img src="docs/images/chrome-extensions.png" width="520" alt="Chrome extensions page with Developer mode on and Load unpacked" /><br/>
-     <em>Developer mode → Load unpacked → select the <code>extension</code> folder</em>
+     <em>Developer mode → Load unpacked → select the <code>jev-assistant-extension</code> folder</em>
    </p>
 
 3. **Save your OpenRouter key.** On `chrome://extensions`, click **Details** on Jev Assistant → **Extension options**. Paste the key into **Judge API key** and save. Leave the Reply key blank.
@@ -123,7 +123,7 @@ If Chrome turns the extension off after an update, turn it back on in `chrome://
 <details>
 <summary><b>Firefox instead of Chrome</b></summary>
 
-Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and pick `manifest.json` inside the unzipped `extension` folder. Save the key under Extensions → Jev Assistant → Options. Firefox removes a temporary add-on when it quits, so load it again after a restart.
+Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and pick `manifest.json` inside the unzipped `jev-assistant-extension` folder. Save the key under Extensions → Jev Assistant → Options. Firefox removes a temporary add-on when it quits, so load it again after a restart.
 
 <p align="center">
   <img src="docs/images/firefox-temp-addon.png" width="480" alt="Firefox debugging page with Load Temporary Add-on for Jev" /><br/>
