@@ -31,9 +31,8 @@ About fourteen seconds on a Mac. He tries a parking-ticket line and she is not i
   - [Menu-bar app](#option-1-menu-bar-app)
   - [Chrome extension](#option-2-chrome-extension-on-mac)
 - [Set up on Windows](#set-up-on-windows)
-  - [Chrome extension](#option-1-chrome-extension)
-  - [Jev bookmark](#option-2-jev-bookmark)
-  - [Read a window](#option-3-read-a-window)
+  - [Chrome extension (recommended)](#chrome-extension-recommended)
+  - [Alternatives: Jev bookmark or Read a window](#alternatives)
 - [FAQ](#faq)
 
 ## Set up on Mac
@@ -104,17 +103,11 @@ Use this if you only chat in Chrome and don't want to build the app. It reads In
 
 ## Set up on Windows
 
-There are three ways to use Jev on Windows. All of them need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. Each way saves its own copy of the key, so paste it into whichever one you use.
+On Windows, use the Chrome extension. It reads Instagram, WhatsApp Web, Snapchat Web, and Google Messages, and **Fill** puts the reply in the message box. It also works on Linux. If you can't use it, see the [alternatives](#alternatives) below.
 
-| Way | What you do | Fills the message box | Needs Chrome Developer mode |
-|---|---|---|---|
-| [Chrome extension](#option-1-chrome-extension) | Click the Jev icon next to the chat | Yes | Yes |
-| [Jev bookmark](#option-2-jev-bookmark) | Click a bookmark on the chat | No, you copy the reply | No |
-| [Read a window](#option-3-read-a-window) | Pick the chat window from a share list | No, you copy the reply | No |
+You need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend.
 
-The extension and the bookmark read Instagram, WhatsApp Web, Snapchat Web, and Google Messages. Read a window works on any chat window. The Chrome extension also works on Linux.
-
-### Option 1: Chrome extension
+### Chrome extension (recommended)
 
 <a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-jev--assistant--extension.zip-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download jev-assistant-extension.zip" /></a>
 
@@ -158,9 +151,13 @@ Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**
 
 </details>
 
-### Option 2: Jev bookmark
+### Alternatives
 
-No install and no Developer mode. Use Chrome or Edge.
+Use one of these if you can't turn on Developer mode in Chrome. Neither one fills the message box. You copy the reply and paste it yourself. Each keeps its own copy of your key, saved on [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html).
+
+#### Jev bookmark
+
+No install. Works in Chrome or Edge on Instagram, WhatsApp Web, Snapchat Web, and Google Messages.
 
 1. Open [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html).
 2. **Save your OpenRouter key** in step 1 on that page. The box closes and shows the last four characters.
@@ -169,9 +166,9 @@ No install and no Developer mode. Use Chrome or Edge.
 
 A Jev tab opens with the chat as bubbles, the moods, and three replies. Click **Copy**, go back to the chat, and press **Ctrl+V**. To say who they are to you, open **Other ways, and who they are to you** at the bottom of the Jev page.
 
-### Option 3: Read a window
+#### Read a window
 
-Use this for a chat the bookmark can't read. On [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html), save your key, open **Other ways, and who they are to you**, and click **Read a window**. Pick the chat window from the list. Jev reads one picture of it and doesn't keep it.
+Use this for any other chat window. On [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html), save your key, open **Other ways, and who they are to you**, and click **Read a window**. Pick the chat window from the list. Jev reads one picture of it and doesn't keep it.
 
 ## FAQ
 
