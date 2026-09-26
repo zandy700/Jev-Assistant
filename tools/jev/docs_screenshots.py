@@ -76,62 +76,6 @@ def extension_judge_key() -> None:
     img.save(OUT / "extension-judge-key.png", optimize=True)
 
 
-def browser_paste_page() -> None:
-    """Recreate docs/use.html after a fictional analyze: key field + spaced moods + replies."""
-    w, h = 720, 780
-    img = Image.new("RGB", (w, h), "#0e1116")
-    d = ImageDraw.Draw(img)
-    x0, y = 48, 36
-    d.text((x0, y), "Jev", fill="#3ee0d2", font=font(28, True))
-    d.text((x0 + 62, y), "Assistant", fill="#e8edf2", font=font(28, True))
-    y += 44
-    d.text((x0, y), "Paste a chat. Jev reads her mood as a percent and suggests three replies.", fill="#8b97a6", font=font(14))
-    y += 40
-    d.text((x0, y), "OpenRouter API key", fill="#c5cad3", font=font(14))
-    y += 26
-    rounded(d, (x0, y, w - x0, y + 44), 12, "#171c24", outline="#2a323e", width=1)
-    d.text((x0 + 14, y + 12), "sk-or-v1-························", fill="#8b97a6", font=font(15))
-    y += 64
-    d.text((x0, y), "Chat", fill="#c5cad3", font=font(14))
-    y += 26
-    rounded(d, (x0, y, w - x0, y + 120), 12, "#171c24", outline="#2a323e", width=1)
-    chat = [
-        "Me: be honest. are you a parking ticket",
-        "Her: sir. it is tuesday.",
-        "Me: so… gym later?",
-        "Her: I already said no.",
-    ]
-    cy = y + 14
-    for line in chat:
-        d.text((x0 + 14, cy), line, fill="#e8edf2", font=font(14))
-        cy += 22
-    y += 140
-    rounded(d, (x0, y, w - x0, y + 48), 12, "#1c5c58")
-    d.text((w // 2 - 36, y + 14), "Analyze", fill="#e8edf2", font=font(16, True))
-    y += 68
-    # Mood card with ≥16px gaps between separate mood chips (never one clutched string).
-    rounded(d, (x0, y, w - x0, y + 56), 14, "#171c24", outline="#2a323e", width=1)
-    moods = [("Mood:", "#8b97a6"), ("Angry 70%", "#e8edf2"), ("Furious 20%", "#e8edf2"), ("Frustrated 10%", "#e8edf2")]
-    mx = x0 + 16
-    gap = 24
-    for text, color in moods:
-        d.text((mx, y + 16), text, fill=color, font=font(15, True))
-        mx += d.textlength(text, font=font(15, True)) + gap
-    y += 72
-    replies = [
-        "Got it. Want me to snag both our tickets tomorrow?",
-        "Sweet, thanks for the info. I'll grab mine soon.",
-        "Cool cool. Good workout?",
-    ]
-    for text in replies:
-        rounded(d, (x0, y, w - x0, y + 52), 14, "#171c24", outline="#2a323e", width=1)
-        d.text((x0 + 16, y + 16), text, fill="#e8edf2", font=font(14))
-        rounded(d, (w - x0 - 78, y + 12, w - x0 - 14, y + 40), 8, "#1c5c58")
-        d.text((w - x0 - 66, y + 18), "Copy", fill="#e8edf2", font=font(13, True))
-        y += 64
-    img.save(OUT / "browser-paste-analyze.png", optimize=True)
-
-
 def panel_fallback() -> None:
     """Pillow stand-in if Mac --preview PNG capture is unavailable."""
     w, h = 400, 420
@@ -244,14 +188,12 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     mac_judge_key()
     extension_judge_key()
-    browser_paste_page()
     panel_fallback()
     chrome_extensions()
     firefox_temp_addon()
     mac_set_relationship()
     print("wrote", OUT / "mac-judge-key.png")
     print("wrote", OUT / "extension-judge-key.png")
-    print("wrote", OUT / "browser-paste-analyze.png")
     print("wrote", OUT / "mac-panel-moods.png")
     print("wrote", OUT / "chrome-extensions.png")
     print("wrote", OUT / "firefox-temp-addon.png")
