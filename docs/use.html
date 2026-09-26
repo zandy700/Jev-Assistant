@@ -3,78 +3,287 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jev Assistant</title>
+  <title>Jev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
-    :root { color-scheme: dark; font: 17px/1.45 system-ui, sans-serif; }
-    body { margin: 0; background: #0e1116; color: #e8edf2; }
-    main { max-width: 40rem; margin: 0 auto; padding: 20px 16px 48px; }
-    h1 { font-size: 1.6rem; margin: 0 0 6px; }
-    .cyan { color: #3ee0d2; }
-    p.lead, .hint { color: #8b97a6; }
-    label { display: block; margin: 16px 0 6px; font-size: 0.9rem; }
-    textarea, input { width: 100%; box-sizing: border-box; border: 1px solid #2a323e; border-radius: 12px;
-      background: #171c24; color: inherit; font: inherit; padding: 12px; }
-    textarea { min-height: 180px; }
-    button { margin-top: 14px; width: 100%; border: 0; border-radius: 12px; padding: 14px;
-      background: #1c5c58; color: #e8edf2; font: inherit; font-weight: 650; }
-    .actions { display: flex; gap: 10px; }
-    .actions button { flex: 1; }
-    button.secondary { background: #243038; }
-    .card { margin-top: 14px; border: 1px solid #2a323e; border-radius: 14px; padding: 12px 14px; background: #171c24; }
-    .moods { display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; font-weight: 650; }
-    .mood-label { color: #8b97a6; }
-    .reply { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
-    .reply button { width: auto; margin: 0; padding: 8px 12px; }
-    .err { color: #f0a8a8; }
-    #bookmark { color: #3ee0d2; font-weight: 700; }
+    :root {
+      color-scheme: dark;
+      --dusk: #17152a;
+      --panel: #221f3b;
+      --line: #35315a;
+      --them: #34304f;
+      --you: #5b5bf5;
+      --mint: #3ee0d2;
+      --coral: #ff8a7a;
+      --amber: #f5c26b;
+      --ink: #f1eefc;
+      --muted: #a39fc2;
+      --display: "Bricolage Grotesque", system-ui, sans-serif;
+      --body: "Figtree", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--dusk); color: var(--ink);
+      font: 16px/1.5 var(--body);
+      background-image: radial-gradient(60rem 30rem at 85% -10%, #2c2758 0%, transparent 60%);
+    }
+    a { color: var(--mint); }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 10px; }
+
+    /* The shelf mirrors the browser's bookmarks bar sitting just above the page. */
+    .shelf { border-bottom: 1px dashed var(--line); background: rgba(34, 31, 59, 0.7); }
+    .shelf-in {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      max-width: 36rem; margin: 0 auto; padding: 12px 20px; font-size: 0.92rem; color: var(--muted);
+    }
+    .shelf .up { font-family: var(--mono); color: var(--mint); animation: nudge 1.8s ease-in-out infinite; }
+    @keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    #bookmark {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px 8px 9px;
+      border-radius: 999px 999px 999px 6px; background: var(--you); color: #fff;
+      font: 800 1rem var(--display); letter-spacing: 0.01em; text-decoration: none;
+      box-shadow: 0 6px 18px rgba(91, 91, 245, 0.45); cursor: grab; user-select: none;
+    }
+    #bookmark::before {
+      content: "J"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--mint); color: var(--dusk); font-size: 0.8rem;
+    }
+    #bookmark:active { cursor: grabbing; }
+    .shelf small { flex-basis: 100%; }
+    body.results .shelf { display: none; }
+
+    main { max-width: 36rem; margin: 0 auto; padding: 28px 20px 64px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    h1 { font: 800 clamp(2.4rem, 7vw, 3.2rem)/0.95 var(--display); margin: 0; letter-spacing: -0.02em; }
+    h1 span { color: var(--mint); }
+    .tagline { margin: 10px 0 0; color: var(--muted); max-width: 26rem; }
+
+    .keychip {
+      display: none; align-items: center; gap: 8px; margin-top: 6px; padding: 6px 6px 6px 12px;
+      border: 1px solid var(--line); border-radius: 999px; font-size: 0.85rem; color: var(--muted); white-space: nowrap;
+    }
+    .keychip b { font: 500 0.8rem var(--mono); color: var(--ink); }
+    .keychip button { border: 0; background: var(--panel); border-radius: 999px; padding: 3px 10px; color: var(--mint); }
+    body.has-key .keychip { display: inline-flex; }
+
+    h2 { font: 800 1.15rem var(--display); margin: 0 0 12px; }
+    section { margin-top: 32px; }
+    .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; counter-reset: step; }
+    .steps li {
+      counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 12px;
+      padding: 14px 16px; border-radius: 16px; background: var(--panel); color: var(--muted);
+    }
+    .steps li::before {
+      content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid var(--line); font: 800 0.9rem var(--display); color: var(--ink);
+    }
+    .steps li.done::before { content: "✓"; background: var(--mint); border-color: var(--mint); color: var(--dusk); }
+    .steps strong { color: var(--ink); font-weight: 650; display: block; }
+    body.results #setup { display: none; }
+
+    .keyform { display: flex; gap: 8px; margin-top: 10px; }
+    input, textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--dusk);
+      color: var(--ink); font: 0.95rem var(--body); padding: 11px 12px;
+    }
+    input#key { font-family: var(--mono); font-size: 0.85rem; }
+    textarea { min-height: 7rem; resize: vertical; }
+    .btn { border: 0; border-radius: 12px; padding: 11px 16px; font-weight: 650; white-space: nowrap; }
+    .btn.go { background: var(--mint); color: var(--dusk); }
+    .btn.quiet { background: var(--them); }
+    .fine { font-size: 0.82rem; color: var(--muted); margin: 8px 0 0; }
+    body.has-key .keystep .keyform, body.has-key .keystep .fine, body.has-key .unsaved-note, .saved-note { display: none; }
+    body.has-key .saved-note { display: inline; }
+
+    /* Results */
+    #out:empty { display: none; }
+    .status { padding: 16px; border-radius: 16px; background: var(--panel); color: var(--muted); }
+    .status.err { color: var(--coral); }
+    .thread { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 20px; background: var(--panel); }
+    .bubble { max-width: 78%; padding: 8px 13px; border-radius: 18px; font-size: 0.93rem; line-height: 1.35; }
+    .bubble.other { align-self: flex-start; background: var(--them); border-bottom-left-radius: 6px; }
+    .bubble.me { align-self: flex-end; background: var(--you); color: #fff; border-bottom-right-radius: 6px; }
+    .legend { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 8px; }
+    .read { display: grid; gap: 10px; margin-top: 14px; padding: 16px; border-radius: 20px; background: var(--panel); }
+    .row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .label { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .risk { font: 800 1rem var(--display); }
+    .mood { display: grid; grid-template-columns: 7.5rem 1fr 3rem; align-items: center; gap: 10px; font-size: 0.92rem; }
+    .bar { height: 8px; border-radius: 99px; background: var(--dusk); overflow: hidden; }
+    .bar i { display: block; height: 100%; border-radius: 99px; background: var(--mint); }
+    .mood .pct { font: 500 0.8rem var(--mono); text-align: right; color: var(--muted); }
+    .intent { color: var(--ink); }
+    .replies { display: grid; gap: 10px; margin-top: 14px; }
+    .reply {
+      display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; border-radius: 18px;
+      background: var(--panel); border: 1px solid transparent;
+    }
+    .reply:first-child { border-color: var(--mint); }
+    .reply p { margin: 0; flex: 1; }
+    .reply .btn { padding: 8px 14px; }
+    .note { font-size: 0.82rem; color: var(--muted); margin-top: 12px; }
+
+    details { margin-top: 32px; border-top: 1px solid var(--line); padding-top: 16px; }
+    summary { cursor: pointer; font: 800 1rem var(--display); color: var(--muted); }
+    summary:hover { color: var(--ink); }
+    .alt { display: grid; gap: 18px; margin-top: 16px; }
+    .alt label { display: block; font-weight: 650; margin-bottom: 6px; }
+    .alt .actions { display: flex; gap: 8px; margin-top: 8px; }
+
+    .reveal > * { animation: rise 0.35s ease-out both; }
+    .reveal > *:nth-child(2) { animation-delay: 0.08s; }
+    .reveal > *:nth-child(3) { animation-delay: 0.16s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .shelf .up, .reveal > * { animation: none; } }
+    @media (max-width: 480px) {
+      header { flex-direction: column; }
+      .mood { grid-template-columns: 6rem 1fr 2.6rem; }
+    }
   </style>
 </head>
 <body>
+<div class="shelf"><div class="shelf-in">
+  <span class="up" aria-hidden="true">↑</span>
+  <span>Drag</span>
+  <a id="bookmark" href="#">Jev</a>
+  <span>up to your bookmarks bar.</span>
+  <small>No bookmarks bar? Press Ctrl+Shift+B (Cmd+Shift+B on a Mac).</small>
+</div></div>
+
 <main>
-  <h1><span class="cyan">Jev</span> Assistant</h1>
-  <p class="lead">Click the Jev bookmark on an open chat. Jev reads that thread, scores mood, and suggests three replies. Nothing is sent.</p>
-  <p class="hint">Drag <a id="bookmark" href="#">Jev</a> to the bookmarks bar once. Then open Instagram, WhatsApp Web, Snapchat Web, or Google Messages and click that bookmark. Bubbles on the right are you.</p>
-  <label for="key">OpenRouter API key</label>
-  <input id="key" type="password" autocomplete="off" placeholder="sk-or-v1-…">
-  <p class="hint">Saved only in this browser. Create one at openrouter.ai/keys and set a spending cap.</p>
-  <label for="relationship">Who is the other person to you?</label>
-  <textarea id="relationship" rows="2" style="min-height:4.5rem" placeholder="e.g. A classmate I study with; from=me is what I sent, from=other is what they sent"></textarea>
-  <p class="hint">Jev uses this as who they are to you. Leave blank for the default.</p>
-  <label for="chat">Chat</label>
-  <textarea id="chat" placeholder="Me: be honest. are you a parking ticket&#10;Her: sir. it is tuesday."></textarea>
-  <p class="hint">Or paste a thread. Start each line with Me: or Her:. Right-side bubbles are Me.</p>
-  <div class="actions">
-    <button id="share" type="button">Read a window</button>
-    <button id="go" class="secondary" type="button">Analyze pasted chat</button>
-  </div>
-  <p class="hint">Read a window opens the system share picker. Choose the Instagram, WhatsApp, or Snapchat window. One frame goes to your OpenRouter vision model and is not saved.</p>
-  <div id="out"></div>
+  <header>
+    <div>
+      <h1>Jev<span>.</span></h1>
+      <p class="tagline">Reads the chat you have open and suggests three replies. It never sends anything.</p>
+    </div>
+    <div class="keychip">Key <b id="keymask"></b> <button id="changekey" type="button">Change</button></div>
+  </header>
+
+  <section id="setup">
+    <h2>Set up once</h2>
+    <ol class="steps">
+      <li class="keystep" id="step-key">
+        <div>
+          <strong>Save your OpenRouter key</strong>
+          <span class="unsaved-note">Stays in this browser only.</span>
+          <span class="saved-note">Saved in this browser.</span>
+          <form class="keyform" id="keyform">
+            <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-…" aria-label="OpenRouter API key">
+            <button class="btn go" type="submit">Save</button>
+          </form>
+          <p class="fine">Create one at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> and set a spending limit.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Drag the Jev tag to your bookmarks bar</strong>
+          It is at the top of this page.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Open a chat and click the bookmark</strong>
+          Instagram, WhatsApp Web, Snapchat Web, or Google Messages. Your replies show up here.
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="out" aria-live="polite"></section>
+
+  <details id="more">
+    <summary>Other ways, and who they are to you</summary>
+    <div class="alt">
+      <div>
+        <label for="relationship">Who is this person to you?</label>
+        <textarea id="relationship" style="min-height:3.5rem" placeholder="A classmate I'm trying to ask out"></textarea>
+        <p class="fine">Saved in this browser. Leave it blank if you'd rather not say.</p>
+      </div>
+      <div>
+        <label>Read a window</label>
+        <p class="fine">For chats the bookmark can't read. Pick the chat window in the share dialog. Jev reads one picture of it and doesn't keep it.</p>
+        <div class="actions"><button id="share" class="btn quiet" type="button">Read a window</button></div>
+      </div>
+      <div>
+        <label for="chat">Paste a chat</label>
+        <textarea id="chat" placeholder="Me: be honest. are you a parking ticket&#10;Her: sir. it is tuesday."></textarea>
+        <p class="fine">Start each line with Me: or Her:.</p>
+        <div class="actions"><button id="go" class="btn quiet" type="button">Get replies</button></div>
+      </div>
+    </div>
+  </details>
 </main>
+
 <script type="module">
 const $ = (id) => document.getElementById(id);
 const out = $("out");
-$("key").value = localStorage.getItem("jev-key") || "";
+let lastMessages = null;
+
+function savedKey() { return localStorage.getItem("jev-key") || ""; }
+function showKeyState() {
+  const key = savedKey();
+  document.body.classList.toggle("has-key", Boolean(key));
+  $("step-key").classList.toggle("done", Boolean(key));
+  $("keymask").textContent = key ? "••••" + key.slice(-4) : "";
+}
+$("keyform").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const key = $("key").value.trim();
+  if (!key) { $("key").focus(); return; }
+  localStorage.setItem("jev-key", key);
+  $("key").value = "";
+  showKeyState();
+  if (lastMessages) analyzeMessages(lastMessages);
+});
+$("changekey").addEventListener("click", () => {
+  localStorage.removeItem("jev-key");
+  document.body.classList.remove("results");
+  showKeyState();
+  $("key").focus();
+});
+showKeyState();
+
 $("relationship").value = localStorage.getItem("jev-relationship") || "";
+$("relationship").addEventListener("change", () => localStorage.setItem("jev-relationship", $("relationship").value.trim()));
 
 fetch(new URL("jev-read.js", import.meta.url)).then((r) => r.text()).then((code) => {
-  const href = "javascript:" + encodeURIComponent(code);
   const link = $("bookmark");
-  link.href = href;
+  link.href = "javascript:" + encodeURIComponent(code);
   link.draggable = true;
-  link.addEventListener("click", (e) => e.preventDefault());
 }).catch(() => {});
+$("bookmark").addEventListener("click", (e) => {
+  e.preventDefault();
+  status("Drag the Jev tag up to your bookmarks bar instead of clicking it. Then click it from the bar while a chat is open.");
+});
+
+function status(text, isError = false) {
+  const d = document.createElement("div");
+  d.className = "status" + (isError ? " err" : "");
+  d.textContent = text;
+  out.replaceChildren(d);
+}
 
 function loadSharedChat() {
   if (!location.hash.startsWith("#j=")) return;
   let data = null;
   try { data = JSON.parse(decodeURIComponent(location.hash.slice(3))); } catch { data = null; }
   history.replaceState(null, "", location.pathname + location.search);
-  const messages = Array.isArray(data?.messages) ? data.messages.slice(-10) : [];
+  const messages = (Array.isArray(data?.messages) ? data.messages : [])
+    .map((m) => ({ side: m.side === "me" ? "me" : "other", text: String(m.text || "").trim() }))
+    .filter((m) => m.text).slice(-10);
   if (!messages.length) return;
-  $("chat").value = messages.map((m) => ((m.side === "me") ? "Me: " : "Her: ") + m.text).join("\n");
-  const parsed = messages.map((m) => ({ side: m.side === "me" ? "me" : "other", text: String(m.text || "").trim() })).filter((m) => m.text);
-  if ($("key").value.trim()) analyzeMessages(parsed);
-  else out.append(textCard("Chat loaded from the bookmark. Add your OpenRouter key, then Analyze."));
+  document.body.classList.add("results");
+  lastMessages = messages;
+  if (savedKey()) analyzeMessages(messages);
+  else {
+    document.body.classList.remove("results");
+    status("Jev read the chat. Save your OpenRouter key above and your replies appear here.");
+    $("key").focus();
+  }
 }
 
 function parseChat(raw) {
@@ -88,9 +297,6 @@ function parseChat(raw) {
   return msgs.slice(-10);
 }
 
-function card(html) { const d = document.createElement("div"); d.className = "card"; d.innerHTML = html; return d; }
-function textCard(s) { const d = card(""); d.textContent = s; return d; }
-
 async function loadBrain() {
   const urls = [
     "https://raw.githubusercontent.com/zandy700/Jev-Assistant/english-instagram-sms/extension/brain.json",
@@ -102,17 +308,18 @@ async function loadBrain() {
       if (res.ok) return await res.json();
     } catch { /* try the next copy */ }
   }
-  throw new Error("Could not load Jev's question set.");
+  throw new Error("Jev couldn't load its question set. Check your connection and try again.");
 }
 
 async function post(url, key, body) {
   const headers = { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "HTTP-Referer": "https://jev-assistant.local", "X-Title": "Jev Assistant" };
   const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
   const text = await res.text();
+  if (res.status === 401) throw new Error("OpenRouter rejected this key. Click Change next to the key and paste a new one.");
   if (res.status === 402) {
     throw new Error("This OpenRouter key does not have enough credit for that request. Add credit at openrouter.ai/settings/credits, then try again.");
   }
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 140)}`);
+  if (!res.ok) throw new Error(`OpenRouter returned ${res.status}: ${text.slice(0, 140)}`);
   return JSON.parse(text);
 }
 
@@ -121,7 +328,7 @@ const VISION_PROMPT = "This is one screenshot of a chat. Extract the visible mes
 
 async function grabFrame() {
   if (!navigator.mediaDevices?.getDisplayMedia) {
-    throw new Error("This browser cannot share a window. Use Chrome or Edge.");
+    throw new Error("This browser can't share a window. Use Chrome or Edge.");
   }
   let stream;
   try {
@@ -165,16 +372,38 @@ function messagesFromVision(content) {
   })).filter((m) => m.text).slice(-10);
 }
 
+function el(tag, cls, text) {
+  const d = document.createElement(tag);
+  if (cls) d.className = cls;
+  if (text != null) d.textContent = text;
+  return d;
+}
+
+function threadView(messages) {
+  const wrap = el("div");
+  const thread = el("div", "thread");
+  for (const m of messages) thread.append(el("div", "bubble " + m.side, m.text));
+  const legend = el("div", "legend");
+  legend.append(el("span", "", "Them"), el("span", "", "You"));
+  wrap.append(thread, legend);
+  return wrap;
+}
+
+function riskColor(score) {
+  if (score >= 6) return "var(--coral)";
+  if (score >= 3) return "var(--amber)";
+  return "var(--mint)";
+}
+
 async function analyzeMessages(messages) {
-  const key = $("key").value.trim();
-  out.replaceChildren();
-  if (!key || !messages.length) { out.append(textCard("Add your OpenRouter key and at least one message.")); return; }
-  localStorage.setItem("jev-key", key);
-  out.append(textCard("Analyzing…"));
+  const key = savedKey();
+  if (!messages.length) { status("Jev needs at least one message.", true); return; }
+  if (!key) { lastMessages = messages; status("Save your OpenRouter key above first.", true); $("key").focus(); return; }
+  lastMessages = messages;
+  status("Reading the mood and writing replies…");
   try {
     const brain = await loadBrain();
-    const relationship = ($("relationship").value.trim() || brain.default_relationship);
-    localStorage.setItem("jev-relationship", $("relationship").value.trim());
+    const relationship = $("relationship").value.trim() || brain.default_relationship;
     const state = { chat: { relationship, messages: messages.map((m) => ({ from: m.side, text: m.text })), latest_from: messages.at(-1).side } };
     const convo = messages.map((m) => (m.side === "me" ? "Me: " : "Them: ") + m.text).join("\n");
     const [judged, drafted] = await Promise.all([
@@ -186,71 +415,80 @@ async function analyzeMessages(messages) {
     ]);
     const answers = judged.answers || {};
     const mood = answers.mood || {};
-    const moodProbs = mood.probabilities || {};
-    let moodParts = Object.entries(moodProbs)
+    let moods = Object.entries(mood.probabilities || {})
       .map(([k, v]) => [k, Number(v)])
       .filter(([, n]) => Number.isFinite(n))
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([k, n]) => `${brain.labels?.mood?.[k] || k} ${Math.round(n * 100)}%`);
-    if (!moodParts.length && mood.choice) {
-      const pctRaw = mood.probabilities?.[mood.choice] ?? mood.confidence;
-      const pct = Number.isFinite(Number(pctRaw)) ? Math.round(Number(pctRaw) * 100) : null;
-      moodParts = [`${brain.labels?.mood?.[mood.choice] || mood.choice}${pct == null ? "" : ` ${pct}%`}`];
-    }
+      .slice(0, 3);
+    if (!moods.length && mood.choice) moods = [[mood.choice, Number(mood.confidence) || 0]];
     let replies = [];
     try { replies = JSON.parse((drafted.choices?.[0]?.message?.content || "").match(/\[[\s\S]*\]/)?.[0] || "[]"); } catch { replies = []; }
     replies = replies.map((s) => String(s).trim()).filter(Boolean).slice(0, 3);
     while (replies.length < 3) replies.push(brain.fallback_reply);
-    out.replaceChildren();
-    if (moodParts.length) {
-      const d = card("");
-      d.classList.add("moods");
-      const moodLabel = document.createElement("span");
-      moodLabel.className = "mood-label";
-      moodLabel.textContent = "Mood:";
-      d.append(moodLabel);
-      for (const part of moodParts) {
-        const span = document.createElement("span");
-        span.className = "mood";
-        span.textContent = part;
-        d.append(span);
-      }
-      out.append(d);
+
+    const view = el("div", "reveal");
+    view.append(threadView(messages));
+
+    const read = el("div", "read");
+    const risk = Number(answers.danger_level?.score);
+    const top = el("div", "row");
+    top.append(el("span", "label", "Their mood"));
+    if (Number.isFinite(risk)) {
+      const r = el("span", "risk", `Risk ${Math.round(risk)} / 9`);
+      r.style.color = riskColor(risk);
+      top.append(r);
+    }
+    read.append(top);
+    for (const [k, n] of moods) {
+      const row = el("div", "mood");
+      const bar = el("div", "bar");
+      const fill = el("i");
+      fill.style.width = `${Math.round(n * 100)}%`;
+      bar.append(fill);
+      row.append(el("span", "", brain.labels?.mood?.[k] || k), bar, el("span", "pct", `${Math.round(n * 100)}%`));
+      read.append(row);
     }
     const intent = answers.true_intent?.choice;
-    if (intent) out.append(textCard(`Intent: ${brain.labels?.intent?.[intent] || intent}`));
-    for (const text of replies) {
-      const row = card("");
-      row.classList.add("reply");
-      const span = document.createElement("span");
-      span.textContent = text;
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = "Copy";
-      b.onclick = () => navigator.clipboard.writeText(text);
-      row.append(span, b);
-      out.append(row);
+    if (intent) {
+      const row = el("div", "row");
+      row.append(el("span", "label", "What they want"), el("span", "intent", brain.labels?.intent?.[intent] || intent));
+      read.append(row);
     }
-    out.append(textCard("Copy a reply into the chat yourself. Jev does not send it."));
+    view.append(read);
+
+    const list = el("div", "replies");
+    for (const text of replies) {
+      const row = el("div", "reply");
+      const b = el("button", "btn go", "Copy");
+      b.type = "button";
+      b.onclick = async () => {
+        await navigator.clipboard.writeText(text);
+        b.textContent = "Copied";
+        setTimeout(() => { b.textContent = "Copy"; }, 1500);
+      };
+      row.append(el("p", "", text), b);
+      list.append(row);
+    }
+    view.append(list, el("p", "note", "Paste a reply into the chat yourself. Jev doesn't send anything."));
+    out.replaceChildren(view);
   } catch (e) {
-    out.replaceChildren(textCard(String(e.message || e)));
-    out.firstChild.classList.add("err");
+    status(String(e.message || e), true);
   }
 }
 
-$("go").onclick = () => analyzeMessages(parseChat($("chat").value));
-loadSharedChat();
+$("go").onclick = () => {
+  const messages = parseChat($("chat").value);
+  if (messages.length) document.body.classList.add("results");
+  analyzeMessages(messages);
+};
 
 $("share").onclick = async () => {
-  const key = $("key").value.trim();
-  out.replaceChildren();
-  if (!key) { out.append(textCard("Add your OpenRouter key first.")); return; }
-  localStorage.setItem("jev-key", key);
-  out.append(textCard("Pick the chat window in the share dialog…"));
+  const key = savedKey();
+  if (!key) { status("Save your OpenRouter key above first.", true); $("key").focus(); return; }
+  status("Pick the chat window in the share dialog…");
   try {
     const frame = await grabFrame();
-    out.replaceChildren(textCard("Reading the window…"));
+    status("Reading the window…");
     const brain = await loadBrain();
     const seen = await post(brain.reply_url_default, key, {
       model: VISION_MODEL,
@@ -261,14 +499,15 @@ $("share").onclick = async () => {
       ] }],
     });
     const messages = messagesFromVision(seen.choices?.[0]?.message?.content);
-    if (!messages.length) throw new Error("No chat text found. Share the chat window, not the whole desktop.");
-    $("chat").value = messages.map((m) => (m.side === "me" ? "Me: " : "Her: ") + m.text).join("\n");
+    if (!messages.length) throw new Error("No chat text found. Share the chat window, not the whole screen.");
+    document.body.classList.add("results");
     await analyzeMessages(messages);
   } catch (e) {
-    out.replaceChildren(textCard(String(e.message || e)));
-    out.firstChild.classList.add("err");
+    status(String(e.message || e), true);
   }
 };
+
+loadSharedChat();
 </script>
 </body>
 </html>
