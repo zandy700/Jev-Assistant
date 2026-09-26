@@ -3,6 +3,7 @@
 (async () => {
   const url = (p) => chrome.runtime.getURL(p);
   const { signature } = await import(url("lib/core.js"));
+  const { readByLayout } = await import(url("sites/layout.js"));
   const sites = {
     "www.instagram.com": "sites/instagram.js",
     "messages.google.com": "sites/gmessages.js",
@@ -13,19 +14,33 @@
   if (!siteFile) return;
   const site = await import(url(siteFile));
   const rectOf = (el) => el.getBoundingClientRect();
+  const textRect = (el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return range.getBoundingClientRect();
+  };
   let timer = 0;
   let lastSig = null;
 
-  function capture() {
+  function read() {
     const snap = site.read(document, rectOf, location.pathname);
-    if (!snap) return;
+    if (!snap || snap.messages.length) return snap;
+    const byLayout = readByLayout(site.composer(document), rectOf, textRect, innerHeight);
+    return byLayout?.messages.length ? { ...byLayout, title: snap.title ?? byLayout.title } : snap;
+  }
+
+  function snapshot(snap) {
     const sig = (snap.title ?? "") + "#" + signature(snap.messages);
-    if (sig === lastSig) return;
-    lastSig = sig;
-    chrome.runtime.sendMessage({
-      type: "snapshot",
-      snapshot: { ...snap, sig, latestFrom: snap.messages.at(-1)?.side ?? null },
-    });
+    return { ...snap, sig, latestFrom: snap.messages.at(-1)?.side ?? null };
+  }
+
+  function capture() {
+    const snap = read();
+    if (!snap) return;
+    const full = snapshot(snap);
+    if (full.sig === lastSig) return;
+    lastSig = full.sig;
+    chrome.runtime.sendMessage({ type: "snapshot", snapshot: full });
   }
 
   // Instagram and Google Messages are single-page apps: watch the DOM, debounce bursts.
@@ -35,6 +50,10 @@
 
   chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
     if (msg.type === "fill") reply({ ok: fill(site.composer(document), msg.text) });
+    if (msg.type === "capture") {
+      const snap = read();
+      reply({ snapshot: snap ? snapshot(snap) : null });
+    }
   });
 
   /** Put text in the box. Never presses Enter, never clicks send. */

@@ -26,7 +26,10 @@ async function settings() {
 
 const show = (view) => chrome.storage.session.set({ view });
 
+const UNREADABLE = "Jev can't read the messages on this page. Open one conversation (not the inbox), scroll it a little, then click Analyze.";
+
 async function analyze(snap) {
+  if (!snap.messages?.length) return show({ title: snap.title, error: UNREADABLE });
   const cfg = await settings();
   if (!cfg.judgeKey) return show({ title: snap.title, error: "Paste your OpenRouter key above, then analyze." });
   await show({ title: snap.title, status: "Analyzing…" });
@@ -54,13 +57,29 @@ async function onSnapshot(snapshot, tabId) {
   if (snapshot.sig === sig) return;
   const snap = { ...snapshot, tabId };
   await chrome.storage.session.set({ sig: snapshot.sig, snap });
-  if (snap.messages.length === 0) return show({ title: snap.title, status: "Can't read this chat's text." });
+  if (snap.messages.length === 0) return show({ title: snap.title, error: UNREADABLE });
   const { auto } = await settings();
   if (snap.latestFrom === "other" && auto) return analyze(snap);
   return show({ title: snap.title, status: "Press Analyze when you want suggestions." });
 }
 
+/** Re-read the chat tab right before analyzing, so a stale or empty snapshot is never sent. */
+async function analyzeNow() {
+  const { snap } = await chrome.storage.session.get("snap");
+  if (!snap) return;
+  let fresh = null;
+  try {
+    fresh = (await chrome.tabs.sendMessage(snap.tabId, { type: "capture" }))?.snapshot ?? null;
+  } catch {
+    return show({ title: snap.title, error: "Reload the chat tab so Jev can read it, then click Analyze." });
+  }
+  if (!fresh) return show({ title: snap.title, error: UNREADABLE });
+  const next = { ...fresh, tabId: snap.tabId };
+  await chrome.storage.session.set({ sig: fresh.sig, snap: next });
+  return analyze(next);
+}
+
 chrome.runtime.onMessage.addListener((msg, sender) => {
   if (msg.type === "snapshot" && sender.tab) onSnapshot(msg.snapshot, sender.tab.id);
-  if (msg.type === "analyzeNow") chrome.storage.session.get("snap").then(({ snap }) => snap && analyze(snap));
+  if (msg.type === "analyzeNow") analyzeNow();
 });
