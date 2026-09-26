@@ -6,7 +6,16 @@
 
 **Jev reads the open chat, judges what the other person wants, and suggests three replies. You choose one. Jev fills the box. You press send.**
 
+<a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-Chrome_extension_for_Windows-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download the Chrome extension for Windows" /></a>
+&nbsp;
+<a href="#set-up-on-mac"><img src="https://img.shields.io/badge/Set_up-Mac-3ee0d2?style=for-the-badge&logo=apple&logoColor=black" alt="Set up on Mac" /></a>
+
 </div>
+
+- **It judges before it writes.** One model reads the other person's mood, intent, and risk. A second model drafts three replies. The first model ranks them.
+- **It knows who is who.** Messages on the right are yours. Messages on the left are theirs.
+- **It never sends.** Fill puts a reply in the message box, or copies it. You press Send yourself.
+- **It uses your key.** Jev has no server. It calls [OpenRouter](https://openrouter.ai/) with your key, only when you analyze a chat.
 
 ## Demo
 
@@ -18,28 +27,12 @@ About fourteen seconds on a Mac. He tries a parking-ticket line and she is not i
 
 ## Contents
 
-- [What Jev does](#what-jev-does)
 - [Set up on Mac](#set-up-on-mac)
 - [Set up on Windows](#set-up-on-windows)
   - [Chrome extension](#option-1-chrome-extension)
   - [Jev bookmark](#option-2-jev-bookmark)
   - [Read a window](#option-3-read-a-window)
-- [Phones](#phones)
-- [What the results mean](#what-the-results-mean)
-- [Supported chats](#supported-chats)
-- [How a suggestion is made](#how-a-suggestion-is-made)
 - [FAQ](#faq)
-- [Limitations](#limitations)
-- [License](#license)
-
-## What Jev does
-
-- **It judges before it writes.** One model reads the other person's mood, intent, and risk. A second model drafts three replies. The first model ranks them.
-- **It knows who is who.** Messages on the right are yours. Messages on the left are theirs.
-- **It never sends.** Fill puts a reply in the message box, or copies it. You press Send yourself.
-- **It uses your key.** Jev has no server. It calls [OpenRouter](https://openrouter.ai/) with your key, only when you analyze a chat.
-
-Every setup below needs one OpenRouter key. Create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit on the same page so it can't overspend.
 
 ## Set up on Mac
 
@@ -67,7 +60,7 @@ Open `mac/build/Jev Assistant.app`. A **Jev** item appears in the menu bar.
 
 Each rebuild resets these. If Jev stops reading after a rebuild, turn it off and on again in both lists.
 
-**3. Save your OpenRouter key.** Menu bar **Jev** → **Set Judge API key…** → paste → **Save**. Leave **Set Reply API key** empty. It reuses the same key.
+**3. Save your OpenRouter key.** If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. Then choose menu bar **Jev** → **Set Judge API key…** → paste → **Save**. Leave **Set Reply API key** empty. It reuses the same key.
 
 <p align="center">
   <img src="docs/images/mac-judge-key.png" width="420" alt="Mac dialog: paste the OpenRouter Judge API key, then Save" /><br/>
@@ -90,7 +83,7 @@ Each rebuild resets these. If Jev stops reading after a rebuild, turn it off and
 
 ## Set up on Windows
 
-There are three ways to use Jev on Windows. Each one keeps its own saved key, so paste your key into whichever you use.
+There are three ways to use Jev on Windows. All of them need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. Each way saves its own copy of the key, so paste it into whichever one you use.
 
 | Way | What you do | Fills the message box | Needs Chrome Developer mode |
 |---|---|---|---|
@@ -102,9 +95,9 @@ The extension and the bookmark read Instagram, WhatsApp Web, Snapchat Web, and G
 
 ### Option 1: Chrome extension
 
-**Download the extension: [jev-assistant-extension.zip](https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip)**
+<a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-jev--assistant--extension.zip-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download jev-assistant-extension.zip" /></a>
 
-Jev is not in the Chrome Web Store yet, so Chrome loads it with Developer mode on.
+Click the button and the zip downloads. Jev is not in the Chrome Web Store yet, so Chrome loads it with Developer mode on.
 
 1. **Unzip it.** Right-click the zip → **Extract All**. You get a folder named `extension` with `manifest.json` inside.
 2. **Load it in Chrome.** Go to `chrome://extensions`, turn on **Developer mode** in the top right, click **Load unpacked**, and select the `extension` folder.
@@ -154,57 +147,6 @@ A Jev tab opens with the chat as bubbles, the moods, and three replies. Click **
 
 Use this for a chat the bookmark can't read. On [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html), save your key, open **Other ways, and who they are to you**, and click **Read a window**. Pick the chat window from the list. Jev reads one picture of it and doesn't keep it.
 
-## Phones
-
-**Android** (11 or newer): download [the APK](apk/jev-assistant-v1.3-release.apk) on the phone and open it. Paste the key in Settings → Judge API, then turn on **Accessibility** and **Display over other apps**. This APK is the older v1.3 build without mood or the WhatsApp and Snapchat readers. For those, build from source with `./gradlew assembleDebug`.
-
-**iPhone** doesn't let apps read other apps' chats. Open [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html) in Safari, open **Other ways**, paste the chat with `Me:` and `Her:` lines, and copy a reply back.
-
-## What the results mean
-
-- **Risk** is 0 to 9. Green is safe, amber means careful, red means a wrong reply could hurt.
-- **Mood** shows the three most likely moods, highest first, each with a percent, for example `Angry 70%`, `Furious 20%`, `Frustrated 10%`. The latest message counts most.
-- **What they want** is the model's read of their intent.
-- **Replies** are ranked. The top one is the model's pick.
-
-The default models are paid OpenRouter models. To spend less, pick a model id ending in `:free` in settings.
-
-## Supported chats
-
-| Chat | Mac | Windows | Android |
-|---|---|---|---|
-| iMessage / SMS | Apple Messages | Google Messages for web | Google Messages |
-| WhatsApp | WhatsApp Desktop, WhatsApp Web | WhatsApp Web | WhatsApp |
-| Instagram | instagram.com Direct | instagram.com Direct | Instagram |
-| Snapchat | Snapchat Web | Snapchat Web | Snapchat |
-| QQ, X, Feishu | | | Yes |
-| Any other chat | | Read a window | Read screen once, which can't tell who sent what |
-
-Jev only reads chats already open on your own device.
-
-## How a suggestion is made
-
-```
-open chat  →  read the recent messages (right side = you)
-           →  judge mood, intent, and risk
-           →  draft 3 replies
-           →  rank those 3
-           →  show them
-           →  Fill writes the box
-           →  you send
-```
-
-One reader per app or site turns the window into a list of who said what. Everything after that is shared.
-
-<details>
-<summary><b>Add another Android chat app</b></summary>
-
-1. Implement `ChatAppAdapter` in `app/src/main/java/com/jev/probe/capture/`. `pkg` is the package name. `extract` returns the title and messages, or `null` when the screen is not a chat.
-2. Register it in `ChatCaptureService`.
-3. Judgment, ranking, the overlay, and Fill stay as they are.
-
-</details>
-
 ## FAQ
 
 <details>
@@ -249,13 +191,70 @@ Add credit at [openrouter.ai/settings/credits](https://openrouter.ai/settings/cr
 
 </details>
 
-## Limitations
+<details>
+<summary><b>Can I use it on my phone?</b></summary>
+
+**Android** (11 or newer): download [the APK](apk/jev-assistant-v1.3-release.apk) on the phone and open it. Paste the key in Settings → Judge API, then turn on **Accessibility** and **Display over other apps**. This APK is the older v1.3 build without mood or the WhatsApp and Snapchat readers. For those, build from source with `./gradlew assembleDebug`.
+
+**iPhone** doesn't let apps read other apps' chats. Open [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html) in Safari, open **Other ways**, paste the chat with `Me:` and `Her:` lines, and copy a reply back.
+
+</details>
+
+<details>
+<summary><b>What do the risk, mood, and reply rankings mean?</b></summary>
+
+- **Risk** is 0 to 9. Green is safe, amber means careful, red means a wrong reply could hurt.
+- **Mood** shows the three most likely moods, highest first, each with a percent, for example `Angry 70%`, `Furious 20%`, `Frustrated 10%`. The latest message counts most.
+- **What they want** is the model's read of their intent.
+- **Replies** are ranked. The top one is the model's pick.
+
+The default models are paid OpenRouter models. To spend less, pick a model id ending in `:free` in settings.
+
+</details>
+
+<details>
+<summary><b>Which chats does it read?</b></summary>
+
+| Chat | Mac | Windows | Android |
+|---|---|---|---|
+| iMessage / SMS | Apple Messages | Google Messages for web | Google Messages |
+| WhatsApp | WhatsApp Desktop, WhatsApp Web | WhatsApp Web | WhatsApp |
+| Instagram | instagram.com Direct | instagram.com Direct | Instagram |
+| Snapchat | Snapchat Web | Snapchat Web | Snapchat |
+| QQ, X, Feishu | | | Yes |
+| Any other chat | | Read a window | Read screen once, which can't tell who sent what |
+
+Jev only reads chats already open on your own device.
+
+</details>
+
+<details>
+<summary><b>How is a suggestion made?</b></summary>
+
+```
+open chat  →  read the recent messages (right side = you)
+           →  judge mood, intent, and risk
+           →  draft 3 replies
+           →  rank those 3
+           →  show them
+           →  Fill writes the box
+           →  you send
+```
+
+One reader per app or site turns the window into a list of who said what. Everything after that is shared. To add an Android chat app, implement `ChatAppAdapter` in `app/src/main/java/com/jev/probe/capture/` and register it in `ChatCaptureService`.
+
+</details>
+
+<details>
+<summary><b>What doesn't it do well yet?</b></summary>
 
 - The Android APK is v1.3 and lacks mood and the WhatsApp and Snapchat readers. Build from source for those.
 - Group chats are read as if they were one-to-one.
 - Screen reading only sees what's on screen. Windows marked secure can't be captured.
 - Each Mac rebuild resets Accessibility and Screen Recording.
 - Firefox temporary add-ons disappear when Firefox quits.
+
+</details>
 
 ## License
 
