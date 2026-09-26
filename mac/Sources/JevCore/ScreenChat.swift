@@ -16,19 +16,41 @@ public struct ScreenTextBox: Equatable {
 }
 
 /// Pure grouping: OCR boxes → Snapshot. No capture / Vision — safe for JevChecks.
-public func snapshotFromScreenText(_ boxes: [ScreenTextBox], title: String? = nil) -> Snapshot {
+/// `width` is the captured window width; the chat column runs to its right edge.
+public func snapshotFromScreenText(_ boxes: [ScreenTextBox], title: String? = nil, width: Double? = nil) -> Snapshot {
     let trimmed = boxes.compactMap { b -> ScreenTextBox? in
         let t = b.text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty else { return nil }
         return ScreenTextBox(text: t, x: b.x, y: b.y, w: b.w, h: b.h)
     }
-    // Instagram's inbox sits left of the open thread. Keep the column above the composer.
-    let thread = focusOpenThread(trimmed)
-    let kept = thread.filter { !looksLikeScreenChrome($0.text) }
+    let (thread, composerX) = focusOpenThread(trimmed)
+    let kept = dropReplyQuotes(thread.filter { !looksLikeScreenChrome($0.text) })
     guard !kept.isEmpty else { return Snapshot(title: title, messages: []) }
     let lines = clusterScreenLines(kept)
     let bubbles = clusterScreenBubbles(lines)
-    return Snapshot(title: title, messages: msgsFromScreenBubbles(bubbles))
+    let colLeft = composerX.map { min($0 - 16, bubbles.map(\.left).min()!) } ?? bubbles.map(\.left).min()!
+    let colRight = max(width ?? 0, bubbles.map(\.right).max()!)
+    return Snapshot(title: title, messages: msgsFromScreenBubbles(bubbles, colLeft: colLeft, colRight: colRight))
+}
+
+/// "Alex replied to you" / "You replied to Sam" and the quoted bubble under it are not new messages.
+func dropReplyQuotes(_ boxes: [ScreenTextBox]) -> [ScreenTextBox] {
+    let sorted = boxes.sorted { $0.y < $1.y }
+    var out: [ScreenTextBox] = []
+    var skipQuoteBelow: ScreenTextBox?
+    for b in sorted {
+        let s = b.text.lowercased()
+        if s.contains("replied to ") || s.hasPrefix("replying to ") || s == "original message:" {
+            skipQuoteBelow = b
+            continue
+        }
+        if let label = skipQuoteBelow {
+            skipQuoteBelow = nil
+            if b.y - (label.y + label.h) <= max(label.h, b.h) * 2.5 { continue }
+        }
+        out.append(b)
+    }
+    return out
 }
 
 /// Clocks, receipts, URL bars — same spirit as MessagesApp chrome filtering.
@@ -44,7 +66,7 @@ public func looksLikeScreenChrome(_ t: String) -> Bool {
         || s.hasPrefix("thursday") || s.hasPrefix("friday") || s.hasPrefix("saturday")
         || s.hasPrefix("sunday") { return true }
     if s.hasPrefix("http://") || s.hasPrefix("https://") || s.hasPrefix("www.") { return true }
-    if t.contains(".") && !t.contains(" ") && (t.contains("/") || s.contains(".com")) { return true }
+    if !t.contains(" ") && (t.contains("/") || s.contains(".com")) { return true }
     if ["type a message", "message…", "message...", "send a message", "write a message"].contains(s) {
         return true
     }
@@ -52,20 +74,27 @@ public func looksLikeScreenChrome(_ t: String) -> Bool {
 }
 
 /// The open chat is the column that contains the message box. Inbox rows sit to its left.
-func focusOpenThread(_ boxes: [ScreenTextBox]) -> [ScreenTextBox] {
+/// Also returns the message box's left edge, which is the chat column's left edge.
+func focusOpenThread(_ boxes: [ScreenTextBox]) -> ([ScreenTextBox], Double?) {
     if let composer = boxes.filter({ isComposerLabel($0.text) }).max(by: { $0.y < $1.y }) {
-        return boxes.filter { b in
+        let kept = boxes.filter { b in
             b.y + b.h < composer.y - 4 && (b.x + b.w / 2) >= composer.x - 16
         }
+        return (kept, composer.x)
     }
-    guard let maxR = boxes.map(\.right).max(), let minL = boxes.map(\.left).min(), maxR - minL > 200 else {
-        return boxes
-    }
-    let split = minL + (maxR - minL) * 0.45
-    let right = boxes.filter { $0.x >= split }
-    let left = boxes.filter { $0.right < split }
-    if right.count >= 1 && left.count >= 4 { return right }
-    return boxes
+    // No message box read: drop only a column that looks like an inbox, never the other person's bubbles.
+    let rows = boxes.filter { looksLikeInboxRow($0.text) }
+    guard rows.count >= 2, let rowLeft = rows.map(\.left).min() else { return (boxes, nil) }
+    let inbox = boxes.filter { abs($0.left - rowLeft) <= 24 || looksLikeInboxRow($0.text) }
+    guard let inboxRight = inbox.map(\.right).max() else { return (boxes, nil) }
+    return (boxes.filter { $0.left > inboxRight }, nil)
+}
+
+private func looksLikeInboxRow(_ t: String) -> Bool {
+    let s = t.lowercased()
+    if s.hasPrefix("you:") || s.hasPrefix("you sent") || s.hasPrefix("active now") { return true }
+    if s.range(of: #"^(active|sent|seen) \d+\s*[smhdw]\w* ago$"#, options: .regularExpression) != nil { return true }
+    return s.range(of: #"·\s*\d+\s*[smhdw]\b"#, options: .regularExpression) != nil
 }
 
 private func isComposerLabel(_ t: String) -> Bool {
@@ -142,12 +171,18 @@ private func clusterScreenBubbles(_ lines: [ScreenLine]) -> [ScreenLine] {
     return bubbles
 }
 
-private func msgsFromScreenBubbles(_ bubbles: [ScreenLine]) -> [Msg] {
+/// Your bubbles hug the right edge of the chat column; theirs hug the left.
+func screenSide(left: Double, right: Double, colLeft: Double, colRight: Double) -> String {
+    let gapLeft = left - colLeft
+    let gapRight = colRight - right
+    if gapRight <= (colRight - colLeft) * 0.06 { return "me" }
+    return gapRight < gapLeft ? "me" : "other"
+}
+
+private func msgsFromScreenBubbles(_ bubbles: [ScreenLine], colLeft: Double, colRight: Double) -> [Msg] {
     let edgeIdx = bubbles.indices.filter { !isDecorativeScreenText(bubbles[$0].text) }
     let edgeBalls = edgeIdx.isEmpty ? bubbles : edgeIdx.map { bubbles[$0] }
-    let lefts = edgeBalls.map(\.left)
-    let rights = edgeBalls.map(\.right)
-    let edgeSides = sidesByBalloonEdges(lefts: lefts, rights: rights)
+    let edgeSides = edgeBalls.map { screenSide(left: $0.left, right: $0.right, colLeft: colLeft, colRight: colRight) }
     var sideByEdgeIndex: [Int: String] = [:]
     for (i, side) in zip(edgeIdx.isEmpty ? Array(bubbles.indices) : edgeIdx, edgeSides) {
         sideByEdgeIndex[i] = side

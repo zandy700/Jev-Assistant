@@ -16,7 +16,12 @@ class ReplyClient(private val prefs: Prefs) {
     companion object {
         /** Shared with the laptop clients via shared/jev-brain.json (see BrainSyncTest). */
         const val DRAFT_SYSTEM =
-            "You suggest replies in an instant-messaging chat. Output only a JSON array " +
+            "You suggest replies in an instant-messaging chat. You write as Me. " +
+                "Lines starting with Me: are messages I already sent (the right side of the chat). " +
+                "Lines starting with Them: were sent by the other person (the left side). " +
+                "Never answer my own messages as if the other person wrote them. " +
+                "If the last line is from Me, write my next follow-up message, not a reply to myself. " +
+                "Output only a JSON array " +
                 "containing exactly 3 candidate replies. Use three different strategies (for example: " +
                 "one steady and receptive, one with a concrete action or commitment, one short and low-key). " +
                 "Each under 40 words, casual and natural, like a real person texting. " +

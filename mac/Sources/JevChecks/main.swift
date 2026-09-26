@@ -145,6 +145,37 @@ check(snapshotFromScreenText(ig).messages == [
     Msg("other", "When the scores came out he got stricter"),
     Msg("me", "lol"),
 ], "screen: instagram inbox is ignored; right side is me")
+// No message box on screen: the other person's column must survive.
+let noComposer = [
+    ScreenTextBox(text: "post it somewhere", x: 72, y: 100, w: 150, h: 16),
+    ScreenTextBox(text: "sending it now", x: 860, y: 140, w: 130, h: 16),
+    ScreenTextBox(text: "it has 180 stars", x: 72, y: 180, w: 120, h: 16),
+    ScreenTextBox(text: "that account is useless now", x: 72, y: 220, w: 200, h: 16),
+    ScreenTextBox(text: "Sam replied to you", x: 68, y: 260, w: 110, h: 12),
+    ScreenTextBox(text: "sending it now", x: 80, y: 280, w: 70, h: 14),
+    ScreenTextBox(text: "cool", x: 72, y: 310, w: 40, h: 16),
+    ScreenTextBox(text: "my feed is all spam", x: 740, y: 350, w: 266, h: 16),
+    ScreenTextBox(text: "instagram.com/direct/t/1234/", x: 0, y: 10, w: 160, h: 12),
+]
+check(snapshotFromScreenText(noComposer, width: 1024).messages == [
+    Msg("other", "post it somewhere"), Msg("me", "sending it now"),
+    Msg("other", "it has 180 stars"), Msg("other", "that account is useless now"),
+    Msg("other", "cool"), Msg("me", "my feed is all spam"),
+], "screen: no message box keeps their column; reply quotes dropped")
+// Only their messages visible: the longest one still is not you.
+let onlyThem = [
+    ScreenTextBox(text: "short", x: 72, y: 100, w: 50, h: 16),
+    ScreenTextBox(text: "a much longer line from them about the weekend", x: 72, y: 140, w: 520, h: 16),
+]
+check(snapshotFromScreenText(onlyThem, width: 1024).messages.map(\.side) == ["other", "other"],
+      "screen: only their bubbles stay other")
+// Only yours visible.
+let onlyMe = [
+    ScreenTextBox(text: "ok", x: 970, y: 100, w: 30, h: 16),
+    ScreenTextBox(text: "a much longer line I sent about the weekend", x: 480, y: 140, w: 520, h: 16),
+]
+check(snapshotFromScreenText(onlyMe, width: 1024).messages.map(\.side) == ["me", "me"],
+      "screen: only your bubbles stay me")
 
 print(failures == 0 ? "ALL CHECKS PASSED" : "\(failures) CHECK(S) FAILED")
 exit(failures == 0 ? 0 : 1)

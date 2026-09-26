@@ -59,7 +59,7 @@ enum ScreenCapture {
             throw Failure.capture(error.localizedDescription)
         }
         let boxes = try ocrBoxes(image)
-        return snapshotFromScreenText(boxes, title: nil)
+        return snapshotFromScreenText(boxes, title: nil, width: Double(image.width))
     }
 
     private static func ocrBoxes(_ image: CGImage) throws -> [ScreenTextBox] {
