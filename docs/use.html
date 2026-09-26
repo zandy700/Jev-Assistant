@@ -109,6 +109,9 @@ async function post(url, key, body) {
   const headers = { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "HTTP-Referer": "https://jev-assistant.local", "X-Title": "Jev Assistant" };
   const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
   const text = await res.text();
+  if (res.status === 402) {
+    throw new Error("This OpenRouter key does not have enough credit for that request. Add credit at openrouter.ai/settings/credits, then try again.");
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 140)}`);
   return JSON.parse(text);
 }
@@ -176,7 +179,7 @@ async function analyzeMessages(messages) {
     const convo = messages.map((m) => (m.side === "me" ? "Me: " : "Them: ") + m.text).join("\n");
     const [judged, drafted] = await Promise.all([
       post(brain.judge_url_default, key, { model: brain.judge_model_default, state, questions: brain.judge_questions }),
-      post(brain.reply_url_default, key, { model: brain.reply_model_default, temperature: 0.8, messages: [
+      post(brain.reply_url_default, key, { model: brain.reply_model_default, temperature: 0.8, max_tokens: 400, messages: [
         { role: "system", content: brain.draft_system },
         { role: "user", content: brain.draft_user_template.replace("{relationship}", relationship).replace("{conversation}", convo) },
       ] }),
@@ -251,6 +254,7 @@ $("share").onclick = async () => {
     const brain = await loadBrain();
     const seen = await post(brain.reply_url_default, key, {
       model: VISION_MODEL,
+      max_tokens: 800,
       messages: [{ role: "user", content: [
         { type: "text", text: VISION_PROMPT },
         { type: "image_url", image_url: { url: frame } },
