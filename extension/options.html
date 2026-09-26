@@ -1,25 +1,65 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Jev Assistant options</title>
+<head><meta charset="utf-8"><title>Jev Assistant settings</title>
 <style>
-  :root { color-scheme: light dark; font: 14px/1.4 system-ui, sans-serif; }
-  body { max-width: 520px; margin: 24px auto; padding: 0 16px; }
-  label { display: block; margin: 12px 0 4px; }
-  input, textarea { width: 100%; box-sizing: border-box; }
+  :root {
+    color-scheme: dark;
+    --dusk: #17152a; --panel: #221f3b; --line: #35315a; --them: #34304f;
+    --mint: #3ee0d2; --ink: #f1eefc; --muted: #a39fc2;
+    --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+    --display: "Bricolage Grotesque", "Segoe UI Variable Display", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--dusk); color: var(--ink); font: 15px/1.5 var(--body); }
+  main { max-width: 34rem; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font: 800 2.2rem/1 var(--display); margin: 0; letter-spacing: -0.02em; }
+  h1 span { color: var(--mint); }
+  .lead { color: var(--muted); margin: 8px 0 24px; }
+  section { padding: 16px; border-radius: 16px; background: var(--panel); margin-top: 14px; }
+  h2 { font: 800 1rem var(--display); margin: 0 0 10px; }
+  label { display: block; margin: 12px 0 5px; font-size: 0.85rem; color: var(--muted); }
+  label:first-of-type { margin-top: 0; }
+  input {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--dusk);
+    color: var(--ink); font: 0.85rem var(--mono); padding: 10px;
+  }
+  .toggle { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 0.9rem; }
+  .toggle input { width: 16px; height: 16px; accent-color: var(--mint); }
+  .fine { font-size: 0.8rem; color: var(--muted); margin: 8px 0 0; }
+  a { color: var(--mint); }
+  .bar { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+  button { border: 0; border-radius: 10px; padding: 11px 20px; background: var(--mint); color: var(--dusk); font: 650 0.95rem var(--body); cursor: pointer; }
+  #status { color: var(--mint); font-size: 0.9rem; }
+  :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 </style></head>
 <body>
-  <h1>Jev Assistant</h1>
-  <label for="judgeKey">Judge API key (OpenRouter)</label><input id="judgeKey" type="password" autocomplete="off">
-  <label for="replyKey">Reply API key (optional, reuses the Judge key when empty)</label><input id="replyKey" type="password" autocomplete="off">
-  <label for="relationship">Who is the other person to you?</label><textarea id="relationship" rows="2"></textarea>
-  <label><input id="auto" type="checkbox" style="width:auto"> Analyze automatically when they send a message</label>
-  <details><summary>Advanced</summary>
+<main>
+  <h1>Jev<span>.</span> settings</h1>
+  <p class="lead">Who they are to you, your key, and auto-analyze are also in the Jev side panel. Click the Jev icon next to a chat.</p>
+
+  <section>
+    <h2>OpenRouter keys</h2>
+    <label for="judgeKey">Judge API key</label><input id="judgeKey" type="password" autocomplete="off" spellcheck="false">
+    <label for="replyKey">Reply API key (leave empty to reuse the Judge key)</label><input id="replyKey" type="password" autocomplete="off" spellcheck="false">
+    <p class="fine">Create one at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.</p>
+  </section>
+
+  <section>
+    <label class="toggle"><input id="auto" type="checkbox"> Analyze automatically when they send a message</label>
+  </section>
+
+  <section>
+    <h2>Models and API addresses</h2>
+    <p class="fine" style="margin-top:0">Leave these empty to use the defaults shown.</p>
     <label for="judgeUrl">Judge URL</label><input id="judgeUrl">
     <label for="judgeModel">Judge model</label><input id="judgeModel">
     <label for="replyUrl">Reply URL (…/chat/completions)</label><input id="replyUrl">
     <label for="replyModel">Reply model</label><input id="replyModel">
-  </details>
-  <p><button id="save">Save</button> <span id="status"></span></p>
+  </section>
+
+  <div class="bar"><button id="save">Save settings</button> <span id="status" aria-live="polite"></span></div>
   <script type="module" src="options.js"></script>
+</main>
 </body>
 </html>

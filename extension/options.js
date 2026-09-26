@@ -1,9 +1,9 @@
 import { customOrigins } from "./lib/origins.js";
 
 const brain = await fetch("brain.json").then((r) => r.json());
-const TEXT = ["judgeKey", "replyKey", "relationship", "judgeUrl", "judgeModel", "replyUrl", "replyModel"];
+const TEXT = ["judgeKey", "replyKey", "judgeUrl", "judgeModel", "replyUrl", "replyModel"];
 const PLACEHOLDER = {
-  relationship: brain.default_relationship, judgeUrl: brain.judge_url_default,
+  judgeKey: "sk-or-v1-…", judgeUrl: brain.judge_url_default,
   judgeModel: brain.judge_model_default, replyUrl: brain.reply_url_default, replyModel: brain.reply_model_default,
 };
 const $ = (id) => document.getElementById(id);
@@ -24,5 +24,5 @@ $("save").onclick = async () => {
     return;
   }
   await chrome.storage.local.set({ ...values, auto: $("auto").checked });
-  $("status").textContent = "Saved.";
+  $("status").textContent = "Settings saved.";
 };

@@ -6,7 +6,7 @@
 
 **Jev reads the open chat, judges what the other person wants, and suggests three replies. You choose one. Jev fills the box. You press send.**
 
-<a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-Chrome_extension_for_Windows-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download the Chrome extension for Windows" /></a>
+<a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-Chrome_extension-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download the Chrome extension" /></a>
 &nbsp;
 <a href="#set-up-on-mac"><img src="https://img.shields.io/badge/Set_up-Mac-3ee0d2?style=for-the-badge&logo=apple&logoColor=black" alt="Set up on Mac" /></a>
 
@@ -28,6 +28,8 @@ About fourteen seconds on a Mac. He tries a parking-ticket line and she is not i
 ## Contents
 
 - [Set up on Mac](#set-up-on-mac)
+  - [Menu-bar app](#option-1-menu-bar-app)
+  - [Chrome extension](#option-2-chrome-extension-on-mac)
 - [Set up on Windows](#set-up-on-windows)
   - [Chrome extension](#option-1-chrome-extension)
   - [Jev bookmark](#option-2-jev-bookmark)
@@ -36,7 +38,14 @@ About fourteen seconds on a Mac. He tries a parking-ticket line and she is not i
 
 ## Set up on Mac
 
-On a Mac, Jev is a menu-bar app. It reads Apple Messages and WhatsApp Desktop directly. For Instagram, WhatsApp Web, Snapchat Web, or Google Messages in Chrome or Firefox, it reads the window in front when you click **Analyze now**. You don't need the Chrome extension on a Mac.
+There are two ways to use Jev on a Mac. Both need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend.
+
+| Way | Reads | Fills the message box | Needs Chrome Developer mode |
+|---|---|---|---|
+| [Menu-bar app](#option-1-menu-bar-app) | Apple Messages, WhatsApp Desktop, and any chat in Chrome or Firefox | Yes | No |
+| [Chrome extension](#option-2-chrome-extension-on-mac) | Instagram, WhatsApp Web, Snapchat Web, and Google Messages in Chrome | Yes | Yes |
+
+### Option 1: Menu-bar app
 
 Requirements: macOS 14 or newer. For SMS threads, turn on Text Message Forwarding on your iPhone.
 
@@ -60,7 +69,7 @@ Open `mac/build/Jev Assistant.app`. A **Jev** item appears in the menu bar.
 
 Each rebuild resets these. If Jev stops reading after a rebuild, turn it off and on again in both lists.
 
-**3. Save your OpenRouter key.** If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. Then choose menu bar **Jev** → **Set Judge API key…** → paste → **Save**. Leave **Set Reply API key** empty. It reuses the same key.
+**3. Save your OpenRouter key.** Menu bar **Jev** → **Set Judge API key…** → paste → **Save**. Leave **Set Reply API key** empty. It reuses the same key.
 
 <p align="center">
   <img src="docs/images/mac-judge-key.png" width="420" alt="Mac dialog: paste the OpenRouter Judge API key, then Save" /><br/>
@@ -80,6 +89,18 @@ Each rebuild resets these. If Jev stops reading after a rebuild, turn it off and
   <img src="docs/images/mac-panel-moods.png" width="360" alt="Mac Jev panel showing Risk, three spaced moods with percents, and three ranked replies" /><br/>
   <em>The Mac panel (fictional chat)</em>
 </p>
+
+### Option 2: Chrome extension on Mac
+
+Use this if you only chat in Chrome and don't want to build the app. It reads Instagram, WhatsApp Web, Snapchat Web, and Google Messages. It can't read Apple Messages or WhatsApp Desktop.
+
+<a href="https://github.com/zandy700/Jev-Assistant/raw/english-instagram-sms/docs/jev-assistant-extension.zip"><img src="https://img.shields.io/badge/Download-jev--assistant--extension.zip-5b5bf5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download jev-assistant-extension.zip" /></a>
+
+1. **Unzip it.** Double-click the zip in Downloads. You get a folder named `jev-assistant-extension`.
+2. **Load it in Chrome.** Go to `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select that folder.
+3. **Open Jev.** Click the puzzle piece in Chrome's toolbar, pin **Jev Assistant**, then click the Jev icon. The side panel opens.
+4. **Set it up in the panel.** Paste your OpenRouter key at the top and click **Save**. Fill in **Who are they to you?** It saves as you type.
+5. **Analyze a chat.** Open a chat and click **Analyze this chat**. **Fill** puts a reply in the message box.
 
 ## Set up on Windows
 
@@ -107,23 +128,28 @@ Click the button and the zip downloads. Jev is not in the Chrome Web Store yet, 
      <em>Developer mode → Load unpacked → select the <code>jev-assistant-extension</code> folder</em>
    </p>
 
-3. **Save your OpenRouter key.** On `chrome://extensions`, click **Details** on Jev Assistant → **Extension options**. Paste the key into **Judge API key** and save. Leave the Reply key blank.
+3. **Open Jev.** Click the puzzle piece in Chrome's toolbar, pin **Jev Assistant**, then click the Jev icon. The side panel opens.
+4. **Save your OpenRouter key in the panel.** Paste it at the top and click **Save**.
 
    <p align="center">
-     <img src="docs/images/extension-judge-key.png" width="420" alt="Browser extension options: Judge API key field highlighted" /><br/>
-     <em>Extension options: paste into Judge API key</em>
+     <img src="docs/images/extension-panel-key.png" width="300" alt="Jev side panel asking for the OpenRouter key, with the Who are they to you field below" /><br/>
+     <em>The side panel before a key is saved</em>
    </p>
 
-4. **Optional: say who they are to you.** In the same options page, fill in **Who is the other person to you?**
-5. **Pin the icon.** Click the puzzle piece in Chrome's toolbar and pin **Jev Assistant**.
-6. **Analyze a chat.** Open a chat, then click the Jev icon. The side panel shows the moods and three replies. **Fill** puts one in the message box.
+5. **Optional: say who they are to you.** Type it into **Who are they to you?** in the panel. It saves as you type.
+6. **Analyze a chat.** Open a chat and click **Analyze this chat**. The panel shows what Jev read, their mood, and three replies. **Fill** puts one in the message box.
 
-If Chrome turns the extension off after an update, turn it back on in `chrome://extensions`.
+   <p align="center">
+     <img src="docs/images/extension-panel.png" width="300" alt="Jev side panel showing the chat as bubbles, three moods, and the best reply with Fill and Copy" /><br/>
+     <em>The side panel after Analyze (fictional chat)</em>
+   </p>
+
+The gear in the panel holds your key, auto-analyze, and a link to model settings. If Chrome turns the extension off after an update, turn it back on in `chrome://extensions`.
 
 <details>
 <summary><b>Firefox instead of Chrome</b></summary>
 
-Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and pick `manifest.json` inside the unzipped `jev-assistant-extension` folder. Save the key under Extensions → Jev Assistant → Options. Firefox removes a temporary add-on when it quits, so load it again after a restart.
+Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and pick `manifest.json` inside the unzipped `jev-assistant-extension` folder. Click the Jev icon to open the sidebar, then paste the key there. Firefox removes a temporary add-on when it quits, so load it again after a restart.
 
 <p align="center">
   <img src="docs/images/firefox-temp-addon.png" width="480" alt="Firefox debugging page with Load Temporary Add-on for Jev" /><br/>
@@ -164,9 +190,9 @@ Only to OpenRouter, with your key, when you analyze. Jev has no server of its ow
 </details>
 
 <details>
-<summary><b>Does a Mac need the Chrome extension?</b></summary>
+<summary><b>Should I use the app or the Chrome extension on a Mac?</b></summary>
 
-No. The menu-bar app reads Chrome and Firefox chats on a Mac. The extension is for Windows and Linux.
+The menu-bar app reads more: Apple Messages, WhatsApp Desktop, and any chat in Chrome or Firefox. Use the [Chrome extension](#option-2-chrome-extension-on-mac) if you only chat in Chrome and don't want to build the app. You don't need both.
 
 </details>
 

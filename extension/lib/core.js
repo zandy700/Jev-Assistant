@@ -49,6 +49,7 @@ export function draftBody(brain, model, messages, relationship) {
   return {
     model,
     temperature: 0.8,
+    max_tokens: 400,
     messages: [
       { role: "system", content: brain.draft_system },
       { role: "user", content: user },

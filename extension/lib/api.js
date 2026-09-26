@@ -12,7 +12,9 @@ export async function postJson(url, key, body) {
       continue;
     }
     const text = await res.text();
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 120)}`);
+    if (res.status === 401) throw new Error("OpenRouter rejected this key. Open settings, click Change, and paste a new one.");
+    if (res.status === 402) throw new Error("This OpenRouter key needs more credit. Add some at openrouter.ai/settings/credits, then analyze again.");
+    if (!res.ok) throw new Error(`OpenRouter returned ${res.status}: ${text.slice(0, 120)}`);
     return JSON.parse(text);
   }
 }

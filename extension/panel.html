@@ -4,21 +4,137 @@
   <meta charset="utf-8">
   <title>Jev Assistant</title>
   <style>
-    :root { color-scheme: light dark; font: 14px/1.4 system-ui, sans-serif; }
-    body { margin: 0; padding: 12px; }
-    h1 { font-size: 15px; margin: 0 0 8px; }
-    .sub { opacity: .7; font-size: 12px; }
-    .err { color: #dc2626; }
-    .moods { display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; font-weight: 600; margin: 4px 0; }
-    .mood-label { opacity: .85; }
-    .reply { border: 1px solid #8884; border-radius: 8px; padding: 8px; margin: 8px 0; }
-    .reply button { margin-right: 6px; }
+    :root {
+      color-scheme: dark;
+      --dusk: #17152a; --panel: #221f3b; --line: #35315a; --them: #34304f; --you: #5b5bf5;
+      --mint: #3ee0d2; --coral: #ff8a7a; --amber: #f5c26b; --ink: #f1eefc; --muted: #a39fc2;
+      --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+      --display: "Bricolage Grotesque", "Segoe UI Variable Display", "SF Pro Rounded", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; display: flex; flex-direction: column; background: var(--dusk); color: var(--ink);
+      font: 14px/1.45 var(--body);
+      background-image: radial-gradient(30rem 16rem at 100% -10%, #2c2758 0%, transparent 60%);
+    }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    a { color: var(--mint); }
+    :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 8px; }
+    [hidden] { display: none !important; }
+
+    header { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
+    .brand { font: 800 1.6rem/1 var(--display); letter-spacing: -0.02em; }
+    .brand span { color: var(--mint); }
+    .chat {
+      flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-size: 0.8rem; color: var(--muted); padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px;
+    }
+    .chat b { color: var(--ink); font-weight: 650; }
+    .icon { border: 0; background: var(--panel); width: 32px; height: 32px; border-radius: 50%; font-size: 15px; }
+
+    .scroll { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+    .card { padding: 12px 14px; border-radius: 16px; background: var(--panel); margin-top: 10px; }
+    .fine { font-size: 0.78rem; color: var(--muted); margin: 6px 0 0; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    input {
+      flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--dusk);
+      color: var(--ink); font: 0.9rem var(--body); padding: 9px 10px;
+    }
+    input#key { font: 0.8rem var(--mono); }
+    .btn { border: 0; border-radius: 10px; padding: 9px 14px; font-weight: 650; white-space: nowrap; }
+    .btn.go { background: var(--mint); color: var(--dusk); }
+    .btn.quiet { background: var(--them); }
+    label.head, .label { display: block; font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .saved { font-size: 0.75rem; color: var(--mint); min-width: 3.5rem; text-align: right; }
+
+    .status { color: var(--muted); }
+    .status.err { color: var(--coral); }
+    .status.busy::after { content: ""; display: inline-block; width: 1.2em; animation: dots 1.2s steps(4) infinite; overflow: hidden; vertical-align: bottom; }
+    @keyframes dots { from { width: 0; } to { width: 1.2em; } }
+    .empty { text-align: center; padding: 28px 14px; }
+    .empty strong { display: block; font: 800 1.05rem var(--display); color: var(--ink); margin-bottom: 4px; }
+
+    .thread { display: flex; flex-direction: column; gap: 5px; }
+    .bubble { max-width: 82%; padding: 6px 11px; border-radius: 16px; font-size: 0.85rem; line-height: 1.3; overflow-wrap: anywhere; }
+    .bubble.other { align-self: flex-start; background: var(--them); border-bottom-left-radius: 5px; }
+    .bubble.me { align-self: flex-end; background: var(--you); color: #fff; border-bottom-right-radius: 5px; }
+    .legend { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+
+    .top { display: flex; justify-content: space-between; align-items: baseline; }
+    .risk { font: 800 0.95rem var(--display); }
+    .mood { display: grid; grid-template-columns: 5.5rem 1fr 2.4rem; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.86rem; }
+    .bar { height: 7px; border-radius: 99px; background: var(--dusk); overflow: hidden; }
+    .bar i { display: block; height: 100%; border-radius: 99px; background: var(--mint); }
+    .pct { font: 500 0.72rem var(--mono); color: var(--muted); text-align: right; }
+    .intent { margin-top: 10px; font-weight: 650; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip { font-size: 0.74rem; padding: 3px 9px; border-radius: 999px; background: var(--dusk); color: var(--muted); }
+
+    .reply { margin-top: 10px; padding: 12px 14px; border-radius: 16px; background: var(--panel); border: 1px solid transparent; }
+    .reply.best { border-color: var(--mint); }
+    .reply .rank { font: 500 0.72rem var(--mono); color: var(--mint); }
+    .reply p { margin: 4px 0 10px; }
+    .reply .row .btn { flex: 1; }
+
+    footer { padding: 12px 16px 14px; border-top: 1px solid var(--line); background: rgba(23, 21, 42, 0.92); }
+    footer .btn { width: 100%; padding: 12px; font-size: 0.95rem; }
+    #note { display: block; min-height: 1.1em; font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 6px; }
+
+    .drawer { margin: 0 16px 6px; }
+    .toggle { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.86rem; }
+    .toggle input { flex: none; width: 16px; height: 16px; accent-color: var(--mint); }
+
+    .reveal > * { animation: rise 0.3s ease-out both; }
+    .reveal > *:nth-child(2) { animation-delay: 0.06s; }
+    .reveal > *:nth-child(3) { animation-delay: 0.12s; }
+    .reveal > *:nth-child(4) { animation-delay: 0.18s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .reveal > *, .status.busy::after { animation: none; } }
   </style>
 </head>
 <body>
-  <h1 id="title">Jev</h1>
-  <div id="body" class="sub">Open an Instagram or Google Messages conversation.</div>
-  <p><button id="analyze">Analyze</button> <span id="note" class="sub"></span></p>
+  <header>
+    <div class="brand">Jev<span>.</span></div>
+    <div class="chat" id="title">No chat open</div>
+    <button class="icon" id="gear" type="button" aria-label="Settings" aria-expanded="false">⚙</button>
+  </header>
+
+  <div class="drawer" id="drawer" hidden>
+    <div class="card">
+      <span class="label">OpenRouter key</span>
+      <div class="row"><span id="keymask" class="chip"></span><button class="btn quiet" id="changekey" type="button">Change</button></div>
+      <label class="toggle"><input id="auto" type="checkbox"> Analyze automatically when they send a message</label>
+      <p class="fine"><a href="#" id="advanced">Models and API addresses</a></p>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <form class="card" id="keycard" hidden>
+      <label class="head" for="key">Paste your OpenRouter key</label>
+      <div class="row">
+        <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-…">
+        <button class="btn go" type="submit">Save</button>
+      </div>
+      <p class="fine">Create one at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. It stays in this browser.</p>
+    </form>
+
+    <div class="card">
+      <label class="head" for="relationship">Who are they to you?</label>
+      <div class="row">
+        <input id="relationship" autocomplete="off" placeholder="A classmate I'm trying to ask out">
+        <span class="saved" id="relsaved"></span>
+      </div>
+    </div>
+
+    <div id="body"></div>
+  </div>
+
+  <footer>
+    <button class="btn go" id="analyze" type="button">Analyze this chat</button>
+    <span id="note" aria-live="polite"></span>
+  </footer>
   <script type="module" src="panel.js"></script>
 </body>
 </html>

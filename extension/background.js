@@ -28,7 +28,7 @@ const show = (view) => chrome.storage.session.set({ view });
 
 async function analyze(snap) {
   const cfg = await settings();
-  if (!cfg.judgeKey) return show({ title: snap.title, error: "No Judge API key set. Add one in the extension options." });
+  if (!cfg.judgeKey) return show({ title: snap.title, error: "Paste your OpenRouter key above, then analyze." });
   await show({ title: snap.title, status: "Analyzing…" });
   const { brain, relationship: rel } = cfg;
   try {

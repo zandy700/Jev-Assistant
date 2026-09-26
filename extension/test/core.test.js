@@ -49,6 +49,7 @@ test("draft body fills the shared template with Me/Them lines", () => {
   assert.equal(b.messages[1].content,
     "Relationship: friend\n\nRecent conversation:\nThem: hi\nMe: hey!\nThem: free tonight?\n\nGive 3 candidate replies.");
   assert.equal(b.temperature, 0.8);
+  assert.equal(b.max_tokens, 400);
 });
 
 test("parseThree: JSON array, line fallback, padding", () => {
