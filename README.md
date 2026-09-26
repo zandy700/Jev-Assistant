@@ -10,9 +10,9 @@
 
 ## Demo
 
-About fifteen seconds, two analyzes. He tries a parking-ticket line. She is not impressed. Jev ranks safer replies. He course-corrects; she softens; Jev analyzes again with a warmer mood and a real plan. Send stays his.
+About fourteen seconds on a Mac. He tries a parking-ticket line and she is not impressed. He picks **Analyze now** from the Jev menu, reads her three moods, and fills the safer reply. She softens, he analyzes again, and Jev finds a warmer mood and a real plan. He presses send himself.
 
-![Jev reads a chat twice, ranks replies, and fills the box without sending](docs/demo.gif)
+![Jev reads a Messages chat twice from the menu bar, shows three moods, and fills the reply box without sending](docs/demo.gif)
 
 [Play the video](docs/demo.mp4)
 
@@ -85,11 +85,6 @@ Jev does not ship a key. Analysis calls [OpenRouter](https://openrouter.ai/) wit
   <em>Mac panel: three spaced moods + ranked replies (fictional chat)</em>
 </p>
 
-<p align="center">
-  <img src="docs/images/browser-paste-analyze.png" width="420" alt="Browser paste page with OpenRouter key field, fictional chat, spaced moods, and Copy buttons" /><br/>
-  <em>Browser paste page after Analyze (fictional chat only)</em>
-</p>
-
 The default judge and reply models are paid OpenRouter models. To spend less, change the model id in settings to one ending in `:free`. An empty Reply key always reuses the Judge key.
 
 The panel lists up to three **mood** possibilities, highest first, each with a percent — for example `Angry 70%`, `Furious 20%`, `Frustrated 10%` on separate spaced items, not one clutched string. That percent is the model's probability for that mood, judged from the messages with the latest line weighted most.
@@ -111,7 +106,7 @@ Jev reads the messages in that tab. Bubbles on the right are you. The inbox besi
 
 **Read a window** on the same page is the other path. The share picker takes one frame of any chat window, including apps outside those four sites. The picture is not saved.
 
-The [browser extension](#windows-or-linux) can still watch the tab and fill the message box if you want that. A Mac does not need the bookmark or the extension.
+The [browser extension](#windows-or-linux) can still watch the tab and fill the message box if you want that. Download [jev-assistant-extension.zip](https://zandy700.github.io/Jev-Assistant/jev-assistant-extension.zip). A Mac does not need the bookmark or the extension.
 
 ## Android
 
@@ -142,7 +137,9 @@ On a Mac, skip this section. The menu-bar app reads the chat. You do not install
 
 This extension is for Windows and Linux. It is the same folder for Chrome and Firefox. It reads WhatsApp Web, Snapchat Web, Instagram Direct, and Google Messages for web.
 
-**Chrome.** Open `chrome://extensions`, turn on Developer mode, choose **Load unpacked**, and select the `extension/` folder. Click the Jev toolbar icon to open the side panel.
+**Download the pack:** [jev-assistant-extension.zip](https://zandy700.github.io/Jev-Assistant/jev-assistant-extension.zip). Unzip it. You will get an `extension` folder with `manifest.json` inside.
+
+**Chrome.** Open `chrome://extensions`, turn on Developer mode, choose **Load unpacked**, and select that unzipped `extension` folder. Click the Jev toolbar icon to open the side panel.
 
 <p align="center">
   <img src="docs/images/chrome-extensions.png" width="520" alt="Chrome extensions page with Developer mode on and Load unpacked" /><br/>
