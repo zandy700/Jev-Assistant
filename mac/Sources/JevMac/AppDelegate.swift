@@ -247,11 +247,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Write into the compose field; never sends. Falls back to the clipboard.
     private func fill(_ text: String) {
         if AXReader.fill(text) {
-            panel.status("Filled in. Review it, then send it yourself.")
+            panel.note("Filled in. Review it, then send it yourself.")
         } else {
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(text, forType: .string)
-            panel.status("Copied. Click the message box and press ⌘V.")
+            panel.note("Copied. Click the message box and press ⌘V.")
         }
     }
 

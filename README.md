@@ -12,10 +12,10 @@
 
 </div>
 
-- **It judges before it writes.** One model reads the other person's mood, intent, and risk. A second model drafts three replies. The first model ranks them.
+- **It judges before it writes.** The judge is TypeSafe's Jev model (`typesafe/jev-1.13`). It reads the other person's mood, intent, and risk, then ranks three replies written by a second model. The app is named after that judge.
 - **It knows who is who.** Messages on the right are yours. Messages on the left are theirs.
 - **It never sends.** Fill puts a reply in the message box, or copies it. You press Send yourself.
-- **It uses your key.** Jev has no server. It calls [OpenRouter](https://openrouter.ai/) with your key, only when you analyze a chat.
+- **It uses one OpenRouter key.** Jev Assistant has no server. [OpenRouter](https://openrouter.ai/) hosts the Jev model, so the same key pays for the judge and the reply drafts. The call happens only when you analyze a chat.
 
 ## Demo
 
@@ -37,7 +37,7 @@ About fourteen seconds on a Mac. He tries a parking-ticket line and she is not i
 
 ## Set up on Mac
 
-There are two ways to use Jev on a Mac. Both need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend.
+There are two ways to use Jev on a Mac. Both need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. That key is the only one to create: OpenRouter hosts TypeSafe's Jev judge (`typesafe/jev-1.13`), so it covers the judge and the reply drafts.
 
 | Way | Reads | Fills the message box | Needs Chrome Developer mode |
 |---|---|---|---|
@@ -105,7 +105,7 @@ Use this if you only chat in Chrome and don't want to build the app. It reads In
 
 On Windows, use the Chrome extension. It reads Instagram, WhatsApp Web, Snapchat Web, and Google Messages, and **Fill** puts the reply in the message box. It also works on Linux. If you can't use it, see the [alternatives](#alternatives) below.
 
-You need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend.
+You need an OpenRouter key. If you don't have one, create it at [openrouter.ai/keys](https://openrouter.ai/keys) with **Create Key**. It starts with `sk-or-v1-`. Set a credit limit there so it can't overspend. That key is the only one to create: OpenRouter hosts TypeSafe's Jev judge (`typesafe/jev-1.13`), so it covers the judge and the reply drafts.
 
 ### Chrome extension (recommended)
 
@@ -171,6 +171,15 @@ A Jev tab opens with the chat as bubbles, the moods, and three replies. Click **
 Use this for any other chat window. On [the Jev page](https://zandy700.github.io/Jev-Assistant/use.html), save your key, open **Other ways, and who they are to you**, and click **Read a window**. Pick the chat window from the list. Jev reads one picture of it and doesn't keep it.
 
 ## FAQ
+
+<details>
+<summary><b>Why is it called Jev, and which API key do I need?</b></summary>
+
+Jev is TypeSafe's judgment model, `typesafe/jev-1.13`. It answers structured questions about mood, intent, and risk, then ranks the three drafts. A normal chat model writes the reply text.
+
+OpenRouter hosts that model. One OpenRouter key (`sk-or-v1-…`), created at [openrouter.ai/keys](https://openrouter.ai/keys), pays for the judge call and the draft call. A TypeSafe account is only for advanced settings, if you point the judge URL at TypeSafe yourself. The default setup stays on OpenRouter.
+
+</details>
 
 <details>
 <summary><b>Will it send messages for me?</b></summary>
@@ -256,9 +265,9 @@ Jev only reads chats already open on your own device.
 
 ```
 open chat  →  read the recent messages (right side = you)
-           →  judge mood, intent, and risk
-           →  draft 3 replies
-           →  rank those 3
+           →  Jev (typesafe/jev-1.13 on OpenRouter) judges mood, intent, and risk
+           →  a chat model drafts 3 replies
+           →  Jev ranks those 3
            →  show them
            →  Fill writes the box
            →  you send
